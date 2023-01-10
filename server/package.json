@@ -5,7 +5,8 @@
   "author": "Decagon <info@decagon.dev>",
   "private": true,
   "scripts": {
-    "serve":"node lib/app"
+    "serve":"node lib/app",
+    "esther": "node server/app"
   },
   "dependencies": {
     "@types/node": "^14.14.22",
