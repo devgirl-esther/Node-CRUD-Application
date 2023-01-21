@@ -15,6 +15,10 @@ var http = require("http");
 var fs = require("fs");
 //import * as data from "./database.json";
 var dataBase = require("./database.json");
+/*
+implement your server code here
+*/
+var dateNow = new Date();
 var server = http.createServer(function (req, res) {
     var _a, _b, _c;
     if (req.url == '/' && req.method === "GET") {
@@ -46,8 +50,8 @@ var server = http.createServer(function (req, res) {
         req.on("end", function () {
             var inputObj = {
                 "organization": dataInput_1.organization,
-                "createdAt": dataInput_1.createdAt,
-                "updatedAt": dataInput_1.updatedAt,
+                "createdAt": dateNow,
+                "updatedAt": dateNow,
                 "products": dataInput_1.products,
                 "marketValue": dataInput_1.marketValue,
                 "address": dataInput_1.address,
@@ -59,8 +63,8 @@ var server = http.createServer(function (req, res) {
             };
             dataBase.push(inputObj);
             try {
-                fs.writeFileSync("/Users/decagon/Documents/GitHub/week-5-task-devgirl-esther/server/server/database.json", JSON.stringify(dataBase), { encoding: "utf8", flag: "w" });
-                console.log(dataBase);
+                fs.writeFileSync("/Users/decagon/Documents/GitHub/week-5-task-devgirl-esther/server/server/database.json", JSON.stringify(dataBase, null, 2), { encoding: "utf8", flag: "w" });
+                console.log("DATA>>>>>>>", dataBase);
             }
             catch (error) {
                 console.log(error);
@@ -93,8 +97,8 @@ var server = http.createServer(function (req, res) {
             else {
                 var newUpdate = {
                     "organization": completeData_1.organization || idRecord_1.organization,
-                    "createdAt": completeData_1.createdAt || idRecord_1.createdAt,
-                    "updatedAt": completeData_1.updatedAt || idRecord_1.updatedAt,
+                    "createdAt": dateNow,
+                    "updatedAt": dateNow,
                     "products": completeData_1.products || idRecord_1.products,
                     "marketValue": completeData_1.marketValue || idRecord_1.marketValue,
                     "address": completeData_1.address || idRecord_1.completeData,
@@ -107,7 +111,7 @@ var server = http.createServer(function (req, res) {
                 var updateEd = dataBase.findIndex(function (value) { return value.id === Number(idUse_1); });
                 dataBase[updateEd] = newUpdate;
                 try {
-                    fs.writeFileSync("/Users/decagon/Documents/GitHub/week-5-task-devgirl-esther/server/server/database.json", JSON.stringify(dataBase), { encoding: "utf8", flag: "w" });
+                    fs.writeFileSync("/Users/decagon/Desktop/week-5-task-devgirl-esther/server/lib/database.json", JSON.stringify(dataBase), { encoding: "utf8", flag: "w" });
                     //  console.log(dataBase);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ newUpdate: newUpdate }));
@@ -147,4 +151,6 @@ var server = http.createServer(function (req, res) {
         res.end(JSON.stringify({ message: 'Route Not Found' }));
     }
 });
-server.listen(3005);
+server.listen(3005, function () {
+    console.log("Running on port 3005");
+});

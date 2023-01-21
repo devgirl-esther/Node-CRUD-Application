@@ -5,12 +5,13 @@
   "author": "Decagon <info@decagon.dev>",
   "private": true,
   "scripts": {
-    "serve":"node lib/app",
-    "esther": "node server/app"
+    "serve": "nodemon lib/app",
+    "dev": "tsc -w"
   },
   "dependencies": {
     "@types/node": "^14.14.22",
+    "nodemon": "^2.0.20",
     "ts-node": "^9.1.1",
-    "typescript": "^4.1.3"
+    "typescript": "^4.9.4"
   }
 }

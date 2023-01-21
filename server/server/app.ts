@@ -1,13 +1,15 @@
 import  { IncomingMessage, Server, ServerResponse } from "http";
 import * as http from "http"
 const fs = require("fs");
+const databaseURL = "/Users/decagon/Desktop/week-5-task-devgirl-esther/server/lib/database.json";
 
-//import * as data from "./database.json";
+
 const dataBase = require("./database.json");
 /*
 implement your server code here
 */
 
+const dateNow = new Date()
 interface org {
   
     organization: string;
@@ -26,27 +28,26 @@ interface org {
 
 const server: Server = http.createServer((req: IncomingMessage, res: ServerResponse) => {
     if (req.url == '/' && req.method === "GET") {
-      console.log(req.url);
+    
       res.end(JSON.stringify({ dataBase }));
     }
     else if (req.url?.match(/\/[0-9]+/) && req.method === "GET"){
-     let splitted = req.url.split('/')
-     let idd:number = Number(splitted[splitted.length - 1]);
-     let record  = dataBase.find((each:org) => each.id === idd);
+     let splittedUrl = req.url.split('/')
+     let idAfterSplit:number = Number(splittedUrl[splittedUrl.length - 1]);
+     let record  = dataBase.find((each:org) => each.id === idAfterSplit);
      if (!record){
       res.writeHead(404, {'Content-Type': 'application/json'})
       res.end(JSON.stringify({message:'Record Not Found'}))
      }else {
       res.writeHead(200, {'Content-Type': 'application/json'})
       res.end(JSON.stringify({ record }));
-      console.log(req.url);
+      
      }
      
 
     }
     else if (req.url == '/' && req.method ==="POST") {
-      // res.end(JSON.stringify({name:"hello"}));
-      //const newData = "";
+      
       let dataInput:org;
       req.on("data",(chunk:string) => {
       const newData = JSON.parse(chunk)
@@ -57,8 +58,8 @@ const server: Server = http.createServer((req: IncomingMessage, res: ServerRespo
         {
   
           "organization": dataInput.organization,
-          "createdAt": dataInput.createdAt,
-          "updatedAt": dataInput.updatedAt,
+          "createdAt": dateNow,
+          "updatedAt": dateNow,
           "products": dataInput.products,
           "marketValue": dataInput.marketValue,
           "address": dataInput.address,
@@ -72,8 +73,8 @@ const server: Server = http.createServer((req: IncomingMessage, res: ServerRespo
 
       dataBase.push(inputObj);
       try {
-         fs.writeFileSync("/Users/decagon/Documents/GitHub/week-5-task-devgirl-esther/server/server/database.json", JSON.stringify(dataBase), {encoding: "utf8", flag: "w"});
-        console.log(dataBase);
+         fs.writeFileSync(databaseURL, JSON.stringify(dataBase, null, 2), {encoding: "utf8", flag: "w"});
+       
       } catch (error) {
         console.log(error)
       }
@@ -86,12 +87,12 @@ const server: Server = http.createServer((req: IncomingMessage, res: ServerRespo
       })
     } 
     else if ( req.url?.match(/\/[0-9]+/) && req.method === "PUT") {
-      // res.end(JSON.stringify({name:"hello"}));
-      const idEdit = req.url.split("/");
-      let idUse = idEdit[idEdit.length - 1];
-      // dataBase[Number(idUse) - 1]
+     
+      const splittedArray = req.url.split("/");
+      let idAfterSplit2 = splittedArray[splittedArray.length - 1];
+      
       let  idRecord = dataBase.find((value:org)=> {
-        return value.id === Number(idUse)
+        return value.id === Number(idAfterSplit2)
       });
       let completeData:org
       req.on("data",(chunk:string) => {
@@ -105,8 +106,8 @@ const server: Server = http.createServer((req: IncomingMessage, res: ServerRespo
          }else {
           let newUpdate = {
             "organization": completeData.organization || idRecord.organization ,
-            "createdAt": completeData.createdAt || idRecord.createdAt,
-            "updatedAt": completeData.updatedAt || idRecord.updatedAt,
+            "createdAt": dateNow,
+            "updatedAt": dateNow,
             "products": completeData.products || idRecord.products,
             "marketValue": completeData.marketValue || idRecord.marketValue,
             "address": completeData.address || idRecord.completeData,
@@ -117,15 +118,15 @@ const server: Server = http.createServer((req: IncomingMessage, res: ServerRespo
             "employees":completeData.employees || idRecord.employees,
           
           }
-          let updateEd = dataBase.findIndex((value:org) => value.id === Number(idUse))
+          let updateEd = dataBase.findIndex((value:org) => value.id === Number(idAfterSplit2))
           dataBase[updateEd] = newUpdate;
           try {
-            fs.writeFileSync("/Users/decagon/Documents/GitHub/week-5-task-devgirl-esther/server/server/database.json", JSON.stringify(dataBase), {encoding: "utf8", flag: "w"});
-          //  console.log(dataBase);
+            fs.writeFileSync(databaseURL, JSON.stringify(dataBase), {encoding: "utf8", flag: "w"});
+         
 
           res.writeHead(200, {'Content-Type': 'application/json'})
           res.end(JSON.stringify({ newUpdate }));
-          console.log(dataBase);
+          
          } catch (error) {
            console.log(error)
          }
@@ -142,12 +143,12 @@ const server: Server = http.createServer((req: IncomingMessage, res: ServerRespo
       const Delete = dataBase.find((value:org) => value.id === Number(extension))
       if (Delete){
         try {
-          fs.writeFileSync("/Users/decagon/Documents/GitHub/week-5-task-devgirl-esther/server/server/database.json", JSON.stringify(toDelete), {encoding: "utf8", flag: "w"});
-        //  console.log(dataBase);
+          fs.writeFileSync(databaseURL, JSON.stringify(toDelete), {encoding: "utf8", flag: "w"});
+        
   
         res.writeHead(200, {'Content-Type': 'application/json'})
         res.end(JSON.stringify({ message: "record deleted succesfully" }));
-        console.log(dataBase);
+  
        } catch (error) {
          console.log(error)
        }  
@@ -163,5 +164,7 @@ const server: Server = http.createServer((req: IncomingMessage, res: ServerRespo
   }
 );
 
-server.listen(3005);
+server.listen(3005, () => {
+  console.log("Running on port 3005");
+});
 
